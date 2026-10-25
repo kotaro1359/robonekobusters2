@@ -628,7 +628,7 @@ function shinsoku(){if(S!=='play'||P.dead||P.mcd>0||P.dash||P.ultT>0||P.hold>0)r
  swish(1.5,1.4);snd(1400,.12,'square',.03,.3);pf(P.x,P.y,14,'#bff4ff',260,.35,5,30)}
 /* 必殺技：みじん切り（5秒間で10回斬る） */
 function useUlt(){if(S!=='play'||P.dead||P.hold>0||P.ult<100||P.ultT>0||B.dying>0||P.dash)return;
- P.ult=0;P.uch=.45;P.ultT=2.85;P.mj={n:0,k:0,ls:9};P.atk=null;P.aq=0;cutin('みじん切り','ult');snd(140,.6,'sine',.07,6);swish(1.4,.5)}
+ P.ult=0;P.uch=.45;P.ultT=4;P.mj={n:0,k:0,ls:9};P.atk=null;P.aq=0;cutin('みじん切り','ult');snd(140,.6,'sine',.07,6);swish(1.4,.5)}
 function mjTarget(){let t=curT();if(t&&tOK(t)&&dist(P,t)<900)return t;let best=null,bd=900;for(const e of[B,...mobs].filter(tOK)){const d=dist(P,e);if(d<bd){bd=d;best=e}}return best}
 /* 空中に浮かぶ三日月の斬撃（見た目） */
 const MJS=[];{const mk=(w,c,o)=>new THREE.Mesh(new THREE.RingGeometry(1-w,1,40,1,0,PI*.95),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:o,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide,toneMapped:false}));
@@ -636,8 +636,8 @@ const MJS=[];{const mk=(w,c,o)=>new THREE.Mesh(new THREE.RingGeometry(1-w,1,40,1
 let MJI=0;function mjFx(x,y,h,f,roll,sc,fin){const o=MJS[MJI++%MJS.length];o.t=0;o.l=fin?.45:.32;o.x=x;o.y=y;o.h=h;o.f=f;o.sc=sc;o.g.visible=true;o.g.rotation.set(0,PI/2-f,0);o.r.rotation.set(0,0,roll)}
 function updMJS(){for(const o of MJS){if(o.t>=o.l){o.g.visible=false;continue}o.t+=1/60;const u=Math.min(1,o.t/o.l),k=1-u,d=60+u*170;
  o.g.position.set(wx(o.x+Math.cos(o.f)*d),o.h,wz(o.y+Math.sin(o.f)*d));const s=o.sc*(.55+.7*(1-Math.pow(1-u,3)));o.r.scale.set(s,s*.6,s);o.r.rotation.z+=.05;o.a.material.opacity=.75*k;o.b.material.opacity=Math.min(1,1.4*k)}}
-function mjSlash(){const M=P.mj;M.n++;M.k+=.0575;M.ls=0;const fin=M.n>=40,f=P.face,W=fin?330:270,L=fin?420:360;let any=0;
- for(const e of[B,...mobs].filter(tOK))if(lineHit(e,P.x,P.y,f,W,L)){any=1;dmgTo(e,10.2,'ult');hitFx(e,1,M.n);if(e===B)bossFlinch()}
+function mjSlash(){const M=P.mj;M.n++;M.k+=.34;M.ls=0;const fin=M.n>=10,f=P.face,W=fin?330:270,L=fin?420:360;let any=0;
+ for(const e of[B,...mobs].filter(tOK))if(lineHit(e,P.x,P.y,f,W,L)){any=1;dmgTo(e,26.7,'ult');hitFx(e,1,M.n);if(e===B)bossFlinch()}
  const h=6+(P.fy||60)+44,roll=(M.n%2?1:-1)*rnd(.3,.9)+(M.n%2?0:PI);mjFx(P.x,P.y,h,f,roll,fin?230:170,fin);if(fin){mjFx(P.x,P.y,h,f,roll+PI/2,260,1);mjFx(P.x,P.y,h,f,roll-PI/2,200,1)}
  for(let i=0;i<4;i++){const q=f+rnd(-.35,.35),sp=rnd(500,1100);PT.push({x:P.x+Math.cos(f)*60,y:P.y+Math.sin(f)*60,h:h+rnd(-40,40),vh:rnd(-60,60),vx:Math.cos(q)*sp,vy:Math.sin(q)*sp,t:0,l:.28,c:i%2?'#9ff6ff':'#ffffff',r:rnd(4,8),gr:0})}
  swish(fin?1.8:1.3,fin?.5:.9+M.n*.05);
@@ -673,7 +673,7 @@ function updP(){
  if(P.ultT>0){P.ultT-=DT;const M=P.mj;if(M){M.ls+=DT;if(m)P.face+=ad(Math.atan2(dy,dx)-P.face)*.12;
   if(P.uch>0){P.uch-=DT;if(frame%2==0)for(let i=0;i<3;i++){const q=rnd(0,TAU),r=rnd(140,260);PT.push({x:P.x+Math.cos(q)*r,y:P.y+Math.sin(q)*r,h:46+rnd(-40,100),vh:0,vx:-Math.cos(q)*r*2.8,vy:-Math.sin(q)*r*2.8,t:0,l:.34,c:i?'#9ff6ff':'#ffffff',r:rnd(4,7),gr:0})}
    if(P.uch<=0){P.uch=0;flash=.4;flashC='#e8fbff';snd(1800,.3,'square',.04,.3)}}
-  else{M.k-=DT;while(M.k<=0&&M.n<40)mjSlash()}}
+  else{M.k-=DT;while(M.k<=0&&M.n<10)mjSlash()}}
   if(P.ultT<=0){P.ultT=0;P.mj=null;P.hold=.35;P.fin=.35}}
  if(!P.atk&&!P.dash&&P.ultT<=0)P.face=t?ang(P,t):(m?Math.atan2(dy,dx):P.face);
  if(!P.dash&&P.ultT<=0){if(B.sky===0&&B.dying<=0&&B.z<60){const d=dist(B,P),mn=B.r*1.02+PR;if(d<mn){const a=ang(B,P);P.x=B.x+Math.cos(a)*mn;P.y=B.y+Math.sin(a)*mn}}
@@ -802,8 +802,8 @@ function* soulRite(){announce('奥義・魂寄せの儀',1);B.lock=1;B.inZ=1;
  const x0=B.x,y0=B.y;B.act='jump';B.crouch=1;yield* W_(.25);B.crouch=0;snd(180,.5,'sawtooth',.06,2.5);pf(B.x,B.y,20,'#a89880',300,.7,14,8,40,0,'sm');
  for(let t=0;t<.8;t+=DT){const u=t/.8;B.x=lerp(x0,ACX,e2(u));B.y=lerp(y0,ACY,e2(u));B.z=Math.sin(u*PI)*320;B.face=ang(B,BTG);yield}
  B.z=0;B.sq=1;shake=Math.max(shake,20);gring(ACX,ACY,40,600,700,'200,220,255');pf(ACX,ACY,30,'#a89880',400,.8,14,8,60,0,'sm');boom(.6,1);
- B.act='charge';B.at=0;fire();snd(70,2,'sawtooth',.07,.6);
- const n=Math.min(9,5+2*Math.max(0,(NET.on?NET.part.length:1)-1)),souls=[];let sp=0,nx=0;
+ B.act='charge';B.at=0;B.pow=0;B.powT=0;fire();snd(70,2,'sawtooth',.07,.6);
+ const n=6,souls=[];let sp=0,nx=0;
  msg('魂がツキ王のもとへ集まってくる！ 魂を斬って止めろ',3.2);
  let got=0,t=0;while(t<n*3+16){t+=DT;
   if(sp<n&&t>=nx){nx+=3;sp++;const a=rnd(0,TAU),r=ARR+rnd(180,420),m=makeSoul(ACX+Math.cos(a)*r,ACY+Math.sin(a)*r);m.face=a+PI;mobs.push(m);souls.push(m);pf(m.x,m.y,20,'#bfe8ff',200,.9,8,70,80);snd(900,.4,'sine',.04,.6)}B.glow=.5+.5*Math.abs(Math.sin(t*3));if(frame%3==0){SWT.getWorldPosition(_a);pf(_a.x+FW/2,_a.z+FH/2,1,'#9fd8ff',120,.5,6,_a.y)}
@@ -813,7 +813,7 @@ function* soulRite(){announce('奥義・魂寄せの儀',1);B.lock=1;B.inZ=1;
  if(got===0){B.act='tired';B.at=0;B.tired=4;msg('ツキ王が疲れている！ 神速アタックでスタンさせろ',3.2);snd(220,1.2,'sine',.06,.5);
   while(B.tired>0){B.tired-=DT;if(frame%14==0)pf(B.x+rnd(-60,60),B.y+rnd(-60,60),2,'#e8e8e8',60,1.2,14,rnd(200,320),80,0,'sm');yield}
   B.tired=0;B.act='';B.lock=0;return}
- B.act='roar';B.at=0;B.glow=1;petal(1.2);shake=Math.max(shake,22);flash=Math.max(flash,.35);flashC='#ff5040';boom(.7,1.1);snd(80,1.2,'sawtooth',.1,.4);
+ B.powT=40;B.act='roar';B.at=0;B.glow=1;petal(1.2);shake=Math.max(shake,22);flash=Math.max(flash,.35);flashC='#ff5040';boom(.7,1.1);snd(80,1.2,'sawtooth',.1,.4);
 gring(B.x,B.y,40,700,800,'255,90,70');
  for(let tt=0;tt<1.2;tt+=DT){if(frame%2==0)pf(B.x+rnd(-140,140),B.y+rnd(-140,140),2,'#ff4a3a',280,.5,7,rnd(80,420));yield}
  B.act='';B.glow=0;yield* W_(.3);B.lock=0}
@@ -877,7 +877,8 @@ function updB(){
   if(B.dying<=0){B.dying=-1;S='win';endT=0;bigBoom();flash=3.4}return}
  if(!B.lock&&B.sky===0&&B.down<=0&&!(NET.on&&!NET.host)){B.face+=cl(ad(ang(B,BTG)-B.face),-(B.p2?2.8:2.3)*DT,(B.p2?2.8:2.3)*DT)}
  if(B.down>0&&frame%7==0)pf(B.x+rnd(-80,80),B.y+rnd(-80,80),1,'#9fe0ff',120,.4,4,rnd(100,330));
- if((B.pow||0)>0&&B.dying===0&&frame%Math.max(2,9-B.pow)==0&&B.sky!==1){SWT.getWorldPosition(_a);pf(_a.x+FW/2+rnd(-20,20),_a.z+FH/2+rnd(-20,20),1,B.pow>=10?'#b050ff':'#ff3a20',90,.6,6,_a.y,60)}
+ if(B.powT>0&&!B.inZ&&(!NET.on||NET.host)){B.powT-=DT;if(B.powT<=0){B.powT=0;B.pow=0;gring(B.x,B.y,40,500,700,'200,220,255');snd(400,.6,'triangle',.05,.5)}}
+ if((B.pow||0)>0&&B.dying===0&&frame%Math.max(2,9-B.pow)==0&&B.sky!==1){SWT.getWorldPosition(_a);pf(_a.x+FW/2+rnd(-20,20),_a.z+FH/2+rnd(-20,20),1,B.pow>=6?'#b050ff':'#ff3a20',90,.6,6,_a.y,60)}
  if(B.ulQ){if(P.ultT<=0||B.dying)B.ulQ=0;else if(!bfBusy()){B.ulQ=0;bossFlinch(1)}}
  if(B.flinchT>0){B.flinchT-=DT;B.vT-=DT}else{B.vT-=DT;B.spA=(B.spA||0)+1.05;if(B.gen){mpRecOn();try{while(B.spA>=1&&B.gen){B.spA--;B.gen.next()}}finally{mpRecOff()}}else B.spA=0}
  if(B.sky===0&&!(NET.on&&!NET.host))inArena(B,B.r*.6)}
@@ -892,7 +893,7 @@ function updLP(){const k=B.dying>0?1-B.dying/DIEL:0,n=Math.ceil(k*8);LPS.forEach
 function updMobs(){if(NET.on&&!NET.host){updMobsC();return}for(const m of mobs){if(m.dead){m.dt+=DT;continue}if(m.spawn>0)continue;m.flash=Math.max(0,m.flash-DT);
  if(m.soul){const a=ang(m,B),d=dist(m,B),sp=m.sp*(d<ARR?1.15:1);m.face=a;m.x+=Math.cos(a)*sp*DT+Math.cos(a+PI/2)*Math.sin(T*1.6+m.cd)*30*DT;m.y+=Math.sin(a)*sp*DT+Math.sin(a+PI/2)*Math.sin(T*1.6+m.cd)*30*DT;
   if(frame%4==0)pf(m.x,m.y,1,'#9fd8ff',30,.6,6,70,20);
-  if(d<B.r+20&&B.dying<=0){m.dead=1;m.dt=0;m.absorbed=1;B.pow=Math.min(10,(B.pow||0)+1);B.aur=.6;fireball(B.x,B.y,200,20,240,.4,'#ff6a50');pf(B.x,B.y,24,'#ff8a6a',360,.6,6,220);snd(140,.5,'sawtooth',.07,.5);clang(1,.6);shake=Math.max(shake,8)}
+  if(d<B.r+20&&B.dying<=0){m.dead=1;m.dt=0;m.absorbed=1;B.pow=Math.min(6,(B.pow||0)+1);B.aur=.6;fireball(B.x,B.y,200,20,240,.4,'#ff6a50');pf(B.x,B.y,24,'#ff8a6a',360,.6,6,220);snd(140,.5,'sawtooth',.07,.5);clang(1,.6);shake=Math.max(shake,8)}
   continue}
  const tp=mobT(m),d=dist(m,tp),a=ang(m,tp);m.tp=tp;m.face=a;const want=d>420?1:d<300?-1:0;
  m.x+=Math.cos(a)*want*120*DT+Math.cos(a+PI/2)*Math.sin(T*.8+m.cd)*40*DT;m.y+=Math.sin(a)*want*120*DT;inArena(m,40);
@@ -995,7 +996,7 @@ function syncB(){
   ARM.forEach((a,i)=>{a.rotation.x=lerp(a.rotation.x,(1-e)*(-1.3+Math.sin(T*8+i*2)*.55)-e*1.15,.25);a.rotation.z=lerp(a.rotation.z,(i?1:-1)*(.45+e*.7),.2);ELB[i].rotation.x=lerp(ELB[i].rotation.x,-.3-e*.4,.2)})}else BR.rotation.z=0;
  if(dn&&B.gl>0){const g=B.glA;HD.rotation.z=g[0];bd.rotation.z=g[3];HD.rotation.y=g[4];ARM[0].rotation.z+=g[5];ARM[1].rotation.z-=g[5]}else{HD.rotation.z*=.6;bd.rotation.z*=.6}
  FLAGC.rotation.y=Math.sin(T*2.3)*.18+(run?.3:0);FLAGC.position.z=-2-Math.abs(Math.sin(T*2.3))*3;
- const pw=Math.min(10,B.pow||0),gw=Math.max(B.act==='charge'?B.glow||0:0,pw*.05);SWGL.opacity+=(gw*.8-SWGL.opacity)*.25;const mx=pw>=10;SWGL.color.setHex(B.act==='charge'?0x9fd8ff:mx?0xb040ff:pw>=4?0xff2a20:0xff7a3a);SWM.emissiveIntensity=B.act==='charge'?gw*.9:pw*.05+(mx?.5:0);SWM.emissive.setHex(B.act==='charge'?0x4a9aff:mx?0x8a20ff:0xff2010);SPIKM.emissive.setHex(mx?0xa030ff:0xff2010);
+ const pw=Math.min(10,Math.round((B.pow||0)*10/6)),gw=Math.max(B.act==='charge'?B.glow||0:0,pw*.05);SWGL.opacity+=(gw*.8-SWGL.opacity)*.25;const mx=pw>=10;SWGL.color.setHex(B.act==='charge'?0x9fd8ff:mx?0xb040ff:pw>=4?0xff2a20:0xff7a3a);SWM.emissiveIntensity=B.act==='charge'?gw*.9:pw*.05+(mx?.5:0);SWM.emissive.setHex(B.act==='charge'?0x4a9aff:mx?0x8a20ff:0xff2010);SPIKM.emissive.setHex(mx?0xa030ff:0xff2010);
  SWG.scale.set(1+pw*.05,1+pw*.08,1+pw*.07);SWM.color.setHex(mx?0x6a3a9a:pw>=6?0x8a8890:pw>=3?0xb8b8c0:0xe6edf6);SPIK.forEach((c,i)=>{c.visible=i<pw});SPIKM.emissiveIntensity=.5+.4*Math.abs(Math.sin(T*4));
  {const eye=B.kneel&&!B.eye?0:1,vh=dn?0x39424f:!eye?0x2a1a10:B.p2?0xff3020:0xffb030;VISM.color.setHex(vh);visC='#'+vh.toString(16).padStart(6,'0')}
  if(B.zap<=0)for(const m of bmats){m.emissive.setHex(B.buzz>0&&frame%4<2?0x70c8ff:B.p2?0x3a0400:0);m.emissiveIntensity=B.buzz>0?.8:B.p2?.35+.2*Math.sin(T*6):.8}
@@ -1004,7 +1005,7 @@ function syncB(){
  updLP()}
 function syncP(){PL.visible=!(P.inv>0&&P.inv<.9&&Math.floor(T*20)%2);const[mx,my]=inp(),mv=!!(mx||my);
  P.fy=(P.fy||0)+((P.ultT>0?60+Math.sin(T*3)*6:0)-(P.fy||0))*.1;PL.position.set(wx(P.x)+(P.hold>0?rnd(-1.5,1.5):0),6+P.fy+(P.hold>0||P.atk||P.dash||P.ultT>0?0:Math.sin(T*4)*3),wz(P.y));PL.rotation.set(0,PI/2-P.face,0);
- const dead=NET.on&&P.dead,M=P.mj,st={mv,run:P.run,atk:P.atk?[P.atk.n,P.atk.t]:M&&M.n>0&&M.ls<.055?[(M.n%2)+1,ATW[0]+M.ls*7]:null,dash:!!P.dash,fin:P.fin>0?P.fin/.3:M&&M.n>0&&M.ls>=.055?.6:0,dodge:P.dodge>0?P.dodge:0,flinch:P.flinch>0,dead,ult:P.uch>0};
+ const dead=NET.on&&P.dead,M=P.mj,st={mv,run:P.run,atk:P.atk?[P.atk.n,P.atk.t]:M&&M.n>0&&M.ls<.26?[(M.n%2)+1,ATW[0]+M.ls*1.5]:null,dash:!!P.dash,fin:P.fin>0?P.fin/.3:M&&M.n>0&&M.ls>=.26?.6:0,dodge:P.dodge>0?P.dodge:0,flinch:P.flinch>0,dead,ult:P.uch>0};
  const o=pApply(PH,st,1/60);PM.emissiveIntensity=P.ultT>0?1.3:.35;PM.emissive.setHex(dead?0x333a44:NET.emi);if(dead){PL.position.y=2;PL.visible=true}
  PTR.c.setHex(P.dash||P.mj?0xffffff:0x9ffcff);if(o.tr){PL.updateMatrixWorld(true);PH.swb.getWorldPosition(_a);PH.swt.getWorldPosition(_b);trailPush(PTR,_a,_b)}
  UBO.visible=UBC.visible=false;updMJS()}
@@ -1208,7 +1209,7 @@ function titleVS(){B.face=PI/2;PL.visible=true;PL.position.set(wx(P.x),6+Math.si
  R.setScissorTest(false);R.setViewport(0,0,W,H);titleDemo()}
 
 /* ---------- タイトル：わざ紹介（ゲーム内実演） ---------- */
-const DMV=[['三段攻撃','J・左クリック','攻撃','1回押すと3連続で斬る！ 最後は回転斬り'],['神速アタック','K・右クリック','神速','一瞬で駆け抜けて斬る！ 移動中は無敵'],['回避','Space','回避','一瞬だけ無敵でかわす'],['みじん切り','I（ゲージをためて）','必殺','宙に浮き、正面を2.5秒間で40回斬り刻む！']];
+const DMV=[['三段攻撃','J・左クリック','攻撃','1回押すと3連続で斬る！ 最後は回転斬り'],['神速アタック','K・右クリック','神速','一瞬で駆け抜けて斬る！ 移動中は無敵'],['回避','Space','回避','一瞬だけ無敵でかわす'],['みじん切り','I（ゲージをためて）','必殺','宙に浮き、正面を4秒間で10回斬り刻む！']];
 const DPAN=[W-252,338,240,168],DRECT=[W-244,360,224,100],DDUR=3;let DM=null;
 function dmInit(){const S2=new THREE.Scene();S2.background=new THREE.Color(0x1a1220);
  S2.add(new THREE.HemisphereLight(0xffe2d0,0x30283a,.8));const dl=new THREE.DirectionalLight(0xffe0c0,.95);dl.position.set(300,500,200);S2.add(dl);
@@ -1537,7 +1538,7 @@ function mpStep(){if(!NET.on)return;
 function mpSend(force){if(!NET.room||!NET.me)return;const iv=NET.on?3:30;if(!force&&frame-NET.lf<iv&&frame>=NET.lf)return;NET.lf=frame;
  const o={v:1,mp:NET.want?1:0,st:S,gid:NET.on?NET.gid:null};if(NETMODE==='pj'){o.nm=NET.myName||'';o.df=DIFF;if(PJ.host)o.ord=[...PJ.ps.keys()]}
  if(NET.on){const fl=(P.dodge>0?1:0)|(P.dash?2:0)|(P.fin>0?4:0)|(P.ultT>0?8:0)|(P.run?16:0)|(P.flinch>0?32:0)|(P.hold>0?64:0)|(P.inv>0&&P.inv<.9?128:0)|(P.uch>0?256:0);
-  o.p={x:r1(P.x),y:r1(P.y),f:r3(P.face),h:Math.ceil(P.hp),m:P.mhp,d:P.dead?1:0,fl,a:P.atk?[P.atk.n,r3(P.atk.t)]:P.mj&&P.mj.n>0&&P.mj.ls<.055?[(P.mj.n%2)+1,r3(ATW[0]+P.mj.ls*7)]:0,u:r3(P.ua||0),tm:TM.hold,sc:NET.sc,rv:NET.rv.id&&NET.rv.t>0?[NET.rv.id,r3(NET.rv.t)]:0};o.sk=S==='cine'&&NET.skp?1:0;
+  o.p={x:r1(P.x),y:r1(P.y),f:r3(P.face),h:Math.ceil(P.hp),m:P.mhp,d:P.dead?1:0,fl,a:P.atk?[P.atk.n,r3(P.atk.t)]:P.mj&&P.mj.n>0&&P.mj.ls<.26?[(P.mj.n%2)+1,r3(ATW[0]+P.mj.ls*1.5)]:0,u:r3(P.ua||0),tm:TM.hold,sc:NET.sc,rv:NET.rv.id&&NET.rv.t>0?[NET.rv.id,r3(NET.rv.t)]:0};o.sk=S==='cine'&&NET.skp?1:0;
   o.dq=NET.dq.slice(-24);o.rq=NET.rq.slice(-6);
   if(NET.host){o.g={id:NET.gid,S,part:NET.part,d:DIFF,t:r1(timeS),lr:loseR||''};o.ht=r3(T);o.b=mpSnapB();o.m=mpSnapM();o.tm=mpSnapTM();o.ack={};for(const r of NET.rp.values())o.ack[r.id]=r.ack;o.ev=NET.ev.slice(-32);
    while(mpLen(JSON.stringify(o))>3900&&o.ev.length>2)o.ev=o.ev.slice(Math.ceil(o.ev.length/2))}
